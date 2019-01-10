@@ -35,9 +35,18 @@ for p in my_data[a+"gpx"][a+"trk"][a+"trkseg"][a+"trkpt"]:
     X.append( [datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon'])])
 
 X=[[(x[0]-md).total_seconds(),(x[1],x[3])] for x in X]
-        
-        
 X=sorted(X,key=operator.itemgetter(0))
+        
+# Filter original
+moving_average  = 48
+Xf=[]
+for k in range(len(X)-moving_average):
+    print k
+    x1 = sum([x[1][0] for x in X[k:k+moving_average]])/float(moving_average)
+    x2 = sum([x[1][1] for x in X[k:k+moving_average]])/float(moving_average)
+    Xf.append((X[k][0],(x1,x2)))
+X=Xf
+print X
 Xd=[0.0]*len(X)
 for i in range(len(X)):
     if i == 0:
