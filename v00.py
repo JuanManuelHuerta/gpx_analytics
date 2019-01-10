@@ -37,16 +37,6 @@ for p in my_data[a+"gpx"][a+"trk"][a+"trkseg"][a+"trkpt"]:
 X=[[(x[0]-md).total_seconds(),(x[1],x[3])] for x in X]
 X=sorted(X,key=operator.itemgetter(0))
         
-# Filter original
-moving_average  = 48
-Xf=[]
-for k in range(len(X)-moving_average):
-    print k
-    x1 = sum([x[1][0] for x in X[k:k+moving_average]])/float(moving_average)
-    x2 = sum([x[1][1] for x in X[k:k+moving_average]])/float(moving_average)
-    Xf.append((X[k][0],(x1,x2)))
-X=Xf
-print X
 Xd=[0.0]*len(X)
 for i in range(len(X)):
     if i == 0:
@@ -56,8 +46,21 @@ for i in range(len(X)):
         #Xd[i]=(X[i][0],1000.0*euclidean(X[i][1],X[i-1][1])/(X[i][0]-X[i-1][0]))
         
 
+# Filter speed 
+moving_average  = 48
+Xf=[]
+for k in range(len(Xd)-moving_average):
+    print k
+    x1 = sum([x[1] for x in Xd[k:k+moving_average]])/float(moving_average)
+    Xf.append((X[k][0],x1))
+X=Xf
+
+
+
+
+
 plt.figure(1)
-plt.plot([x[0] for x in Xd], [x[1] for x in Xd], 'bo')
+plt.plot([x[0] for x in Xf], [x[1] for x in Xf], 'bo')
 plt.show()
 
 
