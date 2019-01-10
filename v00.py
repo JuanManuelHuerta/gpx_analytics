@@ -20,7 +20,13 @@ def euclidean(x,y):
     return math.sqrt((x[0]-y[0])**2.0+(x[1]-y[1])**2.0)
 
 
-my_data = eval(dumps(bf.data(fromstring(open('2007129462.gpx','rt').read()))))
+file_name=None
+if len(sys.argv)>1 and sys.argv[1]!=None:
+    file_name = sys.argv[1]
+else:
+    file_name = '2007129462.gpx'
+
+my_data = eval(dumps(bf.data(fromstring(open(file_name,'rt').read()))))
 a='{http://www.topografix.com/GPX/1/1}'
 
 
@@ -46,8 +52,9 @@ for i in range(len(X)):
         #Xd[i]=(X[i][0],1000.0*euclidean(X[i][1],X[i-1][1])/(X[i][0]-X[i-1][0]))
         
 
-# Filter speed 
+# Filter step:  needs the moving average parameter
 moving_average  = 48
+
 Xf=[]
 for k in range(len(Xd)-moving_average):
     print k
@@ -56,8 +63,7 @@ for k in range(len(Xd)-moving_average):
 X=Xf
 
 
-
-
+# Plot result
 
 plt.figure(1)
 plt.plot([x[0] for x in Xf], [x[1] for x in Xf], 'bo')
