@@ -15,6 +15,8 @@ from haversine import haversine
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+#from scipy import signal
+
 
 def euclidean(x,y):
     return math.sqrt((x[0]-y[0])**2.0+(x[1]-y[1])**2.0)
@@ -56,18 +58,29 @@ for i in range(len(X)):
 moving_average  = 48
 
 Xf=[]
+just_X=[]
 for k in range(len(Xd)-moving_average):
-    print k
+    print k, X[k][0]
     x1 = sum([x[1] for x in Xd[k:k+moving_average]])/float(moving_average)
     Xf.append((X[k][0],x1))
+    just_X.append(x1)
+    #just_X.append(Xd[k][1])
 X=Xf
+print just_X
 
+
+# Points are NOT evenly spaced, but let's ignore that fact for now
+just_X=np.array(just_X)
+
+#  Log-Power Spectrum
+ps = np.log(np.abs(np.fft.fft(just_X))**2)
+#print ps
+plt.figure(1)
+plt.plot(ps)
 
 # Plot result
 
-plt.figure(1)
-plt.plot([x[0] for x in Xf], [x[1] for x in Xf], 'bo')
+#plt.plot([x[0] for x in Xf], [x[1] for x in Xf], 'bo')
 plt.show()
-
 
     
