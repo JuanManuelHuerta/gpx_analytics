@@ -76,11 +76,19 @@ just_X=np.array(just_X)
 ps = np.log(np.abs(np.fft.fft(just_X))**2)
 #print ps
 plt.figure(1)
-plt.plot(ps)
 
 # Plot result
+plt.subplot(3,1,1)
+plt.plot([x[0] for x in Xd], [x[1] for x in Xd], 'bo')
 
-#plt.plot([x[0] for x in Xf], [x[1] for x in Xf], 'bo')
+
+plt.subplot(3,1,2)
+plt.plot([x[0] for x in Xf], [x[1] for x in Xf], 'bo')
+
+plt.subplot(3,1,3)
+plt.plot(ps)
+
+
 plt.show()
 
     
