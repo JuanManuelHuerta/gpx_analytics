@@ -55,18 +55,18 @@ for i in range(len(X)):
         
 
 # Filter step:  needs the moving average parameter
-moving_average  = 48
+moving_average  = 96
 
 Xf=[]
 just_X=[]
 for k in range(len(Xd)-moving_average):
-    print k, X[k][0]
+    #print k, X[k][0]
     x1 = sum([x[1] for x in Xd[k:k+moving_average]])/float(moving_average)
     Xf.append((X[k][0],x1))
     just_X.append(x1)
     #just_X.append(Xd[k][1])
 X=Xf
-print just_X
+#print just_X
 
 
 # Points are NOT evenly spaced, but let's ignore that fact for now
@@ -78,17 +78,33 @@ ps = np.log(np.abs(np.fft.fft(just_X))**2)
 plt.figure(1)
 
 # Plot result
-plt.subplot(3,1,1)
+plt.subplot(4,1,1)
 plt.plot([x[0] for x in Xd], [x[1] for x in Xd], 'bo')
 
 
-plt.subplot(3,1,2)
+plt.subplot(4,1,2)
 plt.plot([x[0] for x in Xf], [x[1] for x in Xf], 'bo')
+x=[x[1] for x in Xf]
 
-plt.subplot(3,1,3)
+
+plt.subplot(4,1,3)
 plt.plot(ps)
 
+plt.subplot(4,1,4)
+NFFT = 64  # the length of the windowing segments
+Pxx, freqs, bins, im = plt.specgram(x, NFFT=NFFT, Fs=1.0, noverlap=0 )
 
+#print Pxx
+
+
+# The `specgram` method returns 4 objects. They are:
+# - Pxx: the periodogram
+# - freqs: the frequency vector
+# - bins: the centers of the time bins
+# - im: the matplotlib.image.AxesImage instance representing the data in the plot
 plt.show()
 
-    
+
+
+
+
