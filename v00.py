@@ -22,16 +22,19 @@ def euclidean(x,y):
     return math.sqrt((x[0]-y[0])**2.0+(x[1]-y[1])**2.0)
 
 
+
+# If name of input file is provided as argument, use it, if not, read predefined file
+# Namespace is fixed. 
 file_name=None
 if len(sys.argv)>1 and sys.argv[1]!=None:
     file_name = sys.argv[1]
 else:
     file_name = '2007129462.gpx'
-
 my_data = eval(dumps(bf.data(fromstring(open(file_name,'rt').read()))))
 a='{http://www.topografix.com/GPX/1/1}'
 
-
+# Convert GPX into list of points (datetime, latitude, elevation, longitude)
+# Find md (minimum_datetime) and subtract it from all time stamps. Then sort the object by datetime offset.
 X=[]
 md=None
 origin=None
@@ -41,10 +44,11 @@ for p in my_data[a+"gpx"][a+"trk"][a+"trkseg"][a+"trkpt"]:
         md = datetime_object
         origin =(float(p['@lat']),  float(p['@lon']))
     X.append( [datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon'])])
-
 X=[[(x[0]-md).total_seconds(),(x[1],x[3])] for x in X]
 X=sorted(X,key=operator.itemgetter(0))
         
+# Find the vector of velocities: Change in adjacent distance divided over change in adjacent timestamps
+# Currently implemented haversine distance, but can also use Euclidean.
 Xd=[0.0]*len(X)
 for i in range(len(X)):
     if i == 0:
@@ -56,7 +60,6 @@ for i in range(len(X)):
 
 # Filter step:  needs the moving average parameter
 moving_average  = 96
-
 Xf=[]
 just_X=[]
 for k in range(len(Xd)-moving_average):
@@ -68,7 +71,7 @@ for k in range(len(Xd)-moving_average):
 X=Xf
 #print just_X
 
-
+# Plotting steps.
 # Points are NOT evenly spaced, but let's ignore that fact for now
 just_X=np.array(just_X)
 
@@ -95,7 +98,6 @@ NFFT = 64  # the length of the windowing segments
 Pxx, freqs, bins, im = plt.specgram(x, NFFT=NFFT, Fs=1.0, noverlap=0 )
 
 #print Pxx
-
 
 # The `specgram` method returns 4 objects. They are:
 # - Pxx: the periodogram
