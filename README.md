@@ -1,5 +1,7 @@
 # gpx_analytics
 
+License: MIT
+
 Analysis of GPS signals: GPX files downloaded from Strava.
 	1. Analysis of velocity, fitering, and spectral components
 	2. Acceleration Curves
