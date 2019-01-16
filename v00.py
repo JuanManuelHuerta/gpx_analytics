@@ -105,7 +105,6 @@ def do_Analysis():
     plt.title("Raw velocity points")
     plt.plot([x[0] for x in Xd], [x[1] for x in Xd], 'bo')
 
-
     plt.subplot(5,1,2)
     plt.title("Low-pass filtered velocity Curve")
     plt.plot([x[0] for x in Xf], [x[1] for x in Xf])
@@ -114,7 +113,9 @@ def do_Analysis():
 
     plt.subplot(5,1,3)
     plt.title("Pace  Curve ")
-    plt.plot([x[0] for x in Xf], [1.0/x[1] for x in Xf])
+    pc =[1.0/x[1] for x in Xf]
+    plt.plot([x[0] for x in Xf],pc) 
+    plt.ylim(max(pc),min(pc))
 
 
 
