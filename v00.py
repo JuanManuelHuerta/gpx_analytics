@@ -75,6 +75,7 @@ def do_Analysis():
         
 
 # Filter step:  needs the moving average parameter
+
     moving_average  = 24
 
     Xf=[]
@@ -90,7 +91,7 @@ def do_Analysis():
     X=Xf
     #print just_X
 
-
+# Plotting steps.
 # Points are NOT evenly spaced, but let's ignore that fact for now
     just_X=np.array(just_X)
 
@@ -116,6 +117,7 @@ def do_Analysis():
     plt.plot([x[0] for x in Xf], [1.0/x[1] for x in Xf])
 
 
+
     plt.subplot(5,1,4)
     plt.title("Log Power Spectrum of the Whole Velocity Run")
     plt.plot(ps)
@@ -124,7 +126,6 @@ def do_Analysis():
     NFFT = 64  # the length of the windowing segments
     plt.title("Changing Log Power Spectrum (Spectrogram)")
     Pxx, freqs, bins, im = plt.specgram(x_p, NFFT=NFFT, Fs=1.0, noverlap=0 )
-
     plt.show()
 
 
