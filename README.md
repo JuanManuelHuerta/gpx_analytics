@@ -2,27 +2,24 @@
 
 License: MIT
 
-Analysis of GPS signals: GPX files downloaded from Strava.
-	1. Analysis of velocity, fitering, and spectral components
-	2. Acceleration Curves
+This code is intended to perform the analysis of Geospatial GPS signals: GPX files downloaded from Strava.
+It will compute and plot velocity, pace, carry out low pass fitering, and perform Log Power spectrum and Spectrogramspectral components
 
-
-
-to run:
-
+To run:
 python v00.py <gpx.file_to_be_proccessed>
 
+Requisites:
+Download a GPX file from Strava. 
+
+Module and package dependencies: basic Python packages (math, operator, numpy, etc.) See all import statements.
+Runs on Python 2.7 
 
 
-Dependencies: numpy, haversine, etc etc. See all imports.
-
-
-See the Wiki for images:
+See the Wiki in the repo for images:
 https://github.com/JuanManuelHuerta/gpx_analytics/wiki
 
 
-Backlog:
-
+Backlog of ideas:
 	1. The GPS raw signal already has a Filter, it seems that the filter of v00 is most probably correcting "decimal truncation" noise in the time signal. Investigate.
 	2. Integrate elevation into the calculation...
 	3. How about GAP, etc?
