@@ -6,14 +6,22 @@ This code is intended to perform the analysis of Geospatial GPS signals for outd
 Formats supported: GPX, and CSV.
 
 Analyses:
-  RAW_VELOCITY
-  FILTERED_VELOCITY
-  FILTERED_PACE
-  LOG_POWER_SPECTRUM
-  SPECTROGRAM
-  HEART_RATE_CURVE
-  HR_PACE
-  HR_PACE_SCATTER
+
+RAW_VELOCITY
+
+FILTERED_VELOCITY
+
+FILTERED_PACE
+
+LOG_POWER_SPECTRUM
+
+SPECTROGRAM
+
+HEART_RATE_CURVE
+
+HR_PACE
+
+HR_PACE_SCATTER
 
 To run:
 python3 v00.py <gpx.file_to_be_proccessed>  "<PIPE_DELIMITED_ANALYSIS_STRING>"
