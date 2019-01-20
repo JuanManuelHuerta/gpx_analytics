@@ -15,18 +15,22 @@ import gpx_analytics
 def do_Analysis():
 
     file_name=None
-    if len(sys.argv)>1 and sys.argv[1]!=None:
-        file_name = sys.argv[1]
-    else:
-        file_name = 'data/2007129462.gpx'
-
     my_segment = gpx_analytics.segment_analytics_object()
-    my_segment.load_gpx(file_name)
+    if len(sys.argv)>1 and sys.argv[1]!=None and 'gpx' in sys.argv[1]:
+        file_name = sys.argv[1]
+        my_segment.load_gpx(file_name)
+    elif len(sys.argv)>1 and sys.argv[1]!=None and 'csv' in sys.argv[1]:
+        file_name = sys.argv[1]
+        my_segment.load_csv(file_name)
+    else:
+        print "No valid file specified"
+        return
+
     my_segment.compute_velocity()
     my_segment.filter_velocity(24)
     my_segment.compute_power_spectrum()
     my_segment.make_plots()
-
+    return 
 
 
 if __name__ == "__main__":

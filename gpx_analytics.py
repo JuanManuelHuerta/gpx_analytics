@@ -16,13 +16,14 @@ from xml.etree.ElementTree import fromstring
 from json import dumps
 from datetime import datetime
 import operator
-#from haversine import haversine
 from math import radians, cos, sin, asin, sqrt
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 from collections import namedtuple
 from multi_sensor_point import *
+import csv
+from itertools import imap
 #from scipy import signal
 
 
@@ -52,10 +53,24 @@ class segment_analytics_object:
                 origin =(float(p['@lat']),  float(p['@lon']))
             #X.append( [datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon'])])
             self.S.append( multi_sensor_point(datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon'])))
-
-    ##  Duplet of (time, coordinates) :  (time, lat, lon)                                                                                                                                        
+            
+       ##  Duplet of (time, coordinates) :  (time, lat, lon)                                                                                                                                        
        # X=[[(x[0]-md).total_seconds(),(x[1],x[3])] for x in X]
         X=[[(x.datetime-md).total_seconds(),(x.latitude,x.longitude)] for x in self.S]
+        self.X=sorted(X,key=operator.itemgetter(0))
+
+
+
+    def load_csv(self,file_location):
+        with open(file_location, mode="rb") as infile:
+            reader = csv.reader(infile)
+            Data = namedtuple("Data", next(reader)) 
+            for data in imap(Data._make, reader):
+                try:
+                    self.S.append(multi_sensor_point(float(data.time),float(data.lat),float(data.elevation),float(data.long)))
+                except:
+                    print "ERROR reading point:", data, "IGNORING"
+        X=[[x.time_offset,(x.latitude,x.longitude)] for x in self.S]
         self.X=sorted(X,key=operator.itemgetter(0))
 
 

@@ -17,5 +17,5 @@ class multi_sensor_point:
         self.datetime=dt
         self.elevation=ele
         self.heartrate=None
-        self.time_offset=None
+        self.time_offset=dt
 
