@@ -7,8 +7,6 @@
 
 """
 
-
-
 __author__      = "Juan M. Huerta"
 __copyright__   = "Copyright 2019, Juan M. Huerta"
 
@@ -23,15 +21,36 @@ from math import radians, cos, sin, asin, sqrt
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+from collections import namedtuple
 #from scipy import signal
 
+class multi_sensor_point:
+    
+    def __init__(self,dt,lat,ele,lon):
+        self.latitude=lat
+        self.longitude=lon
+        self.datetime=dt
+        self.elevation=ele
+        self.heartrate=None
+        self.time_offset=None
 
-class segment:
+
+class segment_analytics_object:
+
+
+
+
+
     
     def __init__(self):
-        i=0
+        ##  S : Sensor point array
+        ##  X : offset lat-long points
+        ##  Xd: Velocity Curve
+        ##  Xf: Filtered velocity curve
+        self.S=[]
         self.X=None
-
+        self.Xd=None
+        self.Xf=None
 
     def load_gpx(self,file_location):
         my_data = eval(dumps(bf.data(fromstring(open(file_location,'rt').read()))))
@@ -44,9 +63,12 @@ class segment:
             if md is None or datetime_object < md:
                 md = datetime_object
                 origin =(float(p['@lat']),  float(p['@lon']))
-            X.append( [datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon'])])
+            #X.append( [datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon'])])
+            self.S.append( multi_sensor_point(datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon'])))
+
     ##  Duplet of (time, coordinates) :  (time, lat, lon)                                                                                                                                        
-        X=[[(x[0]-md).total_seconds(),(x[1],x[3])] for x in X]
+       # X=[[(x[0]-md).total_seconds(),(x[1],x[3])] for x in X]
+        X=[[(x.datetime-md).total_seconds(),(x.latitude,x.longitude)] for x in self.S]
         self.X=sorted(X,key=operator.itemgetter(0))
 
 
