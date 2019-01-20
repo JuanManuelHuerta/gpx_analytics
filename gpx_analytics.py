@@ -22,24 +22,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 from collections import namedtuple
+from multi_sensor_point import *
 #from scipy import signal
-
-class multi_sensor_point:
-    
-    def __init__(self,dt,lat,ele,lon):
-        self.latitude=lat
-        self.longitude=lon
-        self.datetime=dt
-        self.elevation=ele
-        self.heartrate=None
-        self.time_offset=None
 
 
 class segment_analytics_object:
-
-
-
-
 
     
     def __init__(self):
