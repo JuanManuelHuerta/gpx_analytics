@@ -11,11 +11,11 @@ __copyright__   = "Copyright 2019, Juan M. Huerta"
 
 class multi_sensor_point:
 
-    def __init__(self,dt,lat,ele,lon):
+    def __init__(self,dt,lat,ele,lon,heartRate):
         self.latitude=lat
         self.longitude=lon
         self.datetime=dt
         self.elevation=ele
-        self.heartrate=None
+        self.heart_rate=heartRate
         self.time_offset=dt
 

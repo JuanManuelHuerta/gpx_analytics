@@ -35,10 +35,12 @@ class segment_analytics_object:
         ##  X : offset lat-long points
         ##  Xd: Velocity Curve
         ##  Xf: Filtered velocity curve
+        ##  HR: Heart Rate
         self.S=[]
         self.X=None
         self.Xd=None
         self.Xf=None
+        self.HR=None
 
     def load_gpx(self,file_location):
         my_data = eval(dumps(bf.data(fromstring(open(file_location,'rt').read()))))
@@ -52,7 +54,7 @@ class segment_analytics_object:
                 md = datetime_object
                 origin =(float(p['@lat']),  float(p['@lon']))
             #X.append( [datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon'])])
-            self.S.append( multi_sensor_point(datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon'])))
+            self.S.append( multi_sensor_point(datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon']),None))
             
        ##  Duplet of (time, coordinates) :  (time, lat, lon)                                                                                                                                        
        # X=[[(x[0]-md).total_seconds(),(x[1],x[3])] for x in X]
@@ -67,12 +69,44 @@ class segment_analytics_object:
             Data = namedtuple("Data", next(reader)) 
             for data in imap(Data._make, reader):
                 try:
-                    self.S.append(multi_sensor_point(float(data.time),float(data.lat),float(data.elevation),float(data.long)))
+                    self.S.append(multi_sensor_point(float(data.time),float(data.lat),float(data.elevation),float(data.long),float(data.heartRate)))
                 except:
                     print "ERROR reading point:", data, "IGNORING"
         X=[[x.time_offset,(x.latitude,x.longitude)] for x in self.S]
         self.X=sorted(X,key=operator.itemgetter(0))
 
+
+
+    def analyses(self,analysis_string):
+        
+                                                                                                                                                                                                
+    # RAW_VELOCITY
+    # FILTERED_VELOCITY
+    # FILTERED_PACE 
+    # LOG_POWER_SPECTRUM 
+    # SPECTROGRAM
+    # HEART_RATE_CURVE                                                                                                                                                                             
+
+        good_analyses=set(["RAW_VELOCITY","FILTERED_VELOCITY","FILTERED_PACE","LOG_POWER_SPECTRUM","SPECTROGRAM","HEART_RATE_CURVE"])
+        requests=set(analysis_string.split("|")).intersection(good_analyses)
+        for request in requests:
+            print "PERFORMING ->", request
+            
+        if len(requests) < 1 or len(requests)>5:
+            print "ERROR: TOO MANY OR TOO FEW VALID ANALYSES"
+            print "Valid analyses:"
+            for valid in good_analyses:
+                print "\t", valid
+            return
+
+
+        self.compute_velocity()
+        self.filter_velocity_and_pace(24)
+        self.compute_power_spectrum()
+        self.compute_heart_rate()
+
+        self.make_plots(requests)
+   
 
     def compute_velocity(self):
         self.Xd=[0.0]*len(self.X)
@@ -81,8 +115,13 @@ class segment_analytics_object:
                 self.Xd[i]=(0.0,0.0)
             else:
                 self.Xd[i]=(self.X[i][0],self.my_haversine(self.X[i][1][1],self.X[i][1][0],self.X[i-1][1][1],self.X[i-1][1][0])/(self.X[i][0]-self.X[i-1][0]))
+
+    def compute_heart_rate(self):
+        HR=[(x.time_offset,x.heart_rate) for x in self.S ]
+        self.HR=sorted(HR,key=operator.itemgetter(0))
+
                 
-    def filter_velocity(self,m_a):
+    def filter_velocity_and_pace(self,m_a):
            moving_average  = m_a
            Xf=[]
            just_X=[]
@@ -100,37 +139,39 @@ class segment_analytics_object:
         #  Log-Power Spectrum                                                                                                                                                                   
         self.ps = np.log(np.abs(np.fft.fft(self.just_X_pace))**2)
 
-    def make_plots(self):
+    def make_plots(self,analyses):
         #Plotting steps.                                                                                                                                                                        
         # Points are NOT evenly spaced, but let's ignore that fact for now                                                                                                                      
-
         plt.figure(1)
-
-# Plot results                                                                                                                                                                                   
-        plt.subplot(5,1,1)
-        plt.title("Raw velocity points")
-        plt.plot([x[0] for x in self.Xd], [x[1] for x in self.Xd], 'bo')
-
-        plt.subplot(5,1,2)
-        plt.title("Low-pass filtered velocity Curve")
-        plt.plot([x[0] for x in self.Xf], [x[1] for x in self.Xf])
-        x=[x[1] for x in self.Xf]
-        x_p=[1.0/x[1] for x in self.Xf]
-
-        plt.subplot(5,1,3)
-        plt.title("Pace  Curve ")
-        pc =[1.0/x[1] for x in self.Xf]
-        plt.plot([x[0] for x in self.Xf],pc)
-        plt.ylim(max(pc),min(pc))
-
-        plt.subplot(5,1,4)
-        plt.title("Log Power Spectrum of the Whole Velocity Run")
-        plt.plot(self.ps)
-
-        plt.subplot(5,1,5)
-        NFFT = 64  # the length of the windowing segments                                                                                                                                            
-        plt.title("Changing Log Power Spectrum (Spectrogram)")
-        Pxx, freqs, bins, im = plt.specgram(x_p, NFFT=NFFT, Fs=1.0, noverlap=0 )
+        n_panels = len(analyses)
+        i=0
+        for request in analyses:
+            i+=1
+            plt.subplot(n_panels,1,i)
+            if request =="RAW_VELOCITY":
+                plt.title("Raw velocity points")
+                plt.plot([x[0] for x in self.Xd], [x[1] for x in self.Xd], 'bo')
+            if request == "FILTERED_VELOCITY":
+                plt.title("Low-pass filtered velocity Curve")
+                plt.plot([x[0] for x in self.Xf], [x[1] for x in self.Xf])
+            if request == "FILTERED_PACE":
+                plt.title("Pace  Curve ")
+                pc =[1.0/x[1] for x in self.Xf]
+                plt.plot([x[0] for x in self.Xf],pc)
+                plt.ylim(max(pc),min(pc))
+            if request == "LOG_POWER_SPECTRUM":
+                plt.title("Log Power Spectrum of the Whole Velocity Run")
+                plt.plot(self.ps)
+            if request == "SPECTROGRAM":            
+                NFFT = 64  # the length of the windowing segments
+                plt.title("Changing Log Power Spectrum (Spectrogram)")
+                Pxx, freqs, bins, im = plt.specgram(x_p, NFFT=NFFT, Fs=1.0, noverlap=0 )
+            if request == "HEART_RATE_CURVE":
+                plt.title("Heart Rate")
+                for xx in self.HR:
+                    print xx
+                plt.plot([x[0] for x in self.HR], [x[1] for x in self.HR], 'bo')
+                
         plt.show()
 
         
