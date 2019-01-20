@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 
@@ -19,11 +19,17 @@ import operator
 from math import radians, cos, sin, asin, sqrt
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 import math
 from collections import namedtuple
 from multi_sensor_point import *
 import csv
-from itertools import imap
+try:
+    from itertools import imap
+except:
+    imap = map
+
 #from scipy import signal
 
 
@@ -64,14 +70,14 @@ class segment_analytics_object:
 
 
     def load_csv(self,file_location):
-        with open(file_location, mode="rb") as infile:
+        with open(file_location, mode="rt") as infile:
             reader = csv.reader(infile)
             Data = namedtuple("Data", next(reader)) 
             for data in imap(Data._make, reader):
                 try:
                     self.S.append(multi_sensor_point(float(data.time),float(data.lat),float(data.elevation),float(data.long),float(data.heartRate),float(data.speed)))
                 except:
-                    print "ERROR reading point:", data, "IGNORING"
+                    print("ERROR reading point:", data, "IGNORING")
         X=[[x.time_offset,(x.latitude,x.longitude)] for x in self.S]
         self.X=sorted(X,key=operator.itemgetter(0))
 
@@ -91,13 +97,13 @@ class segment_analytics_object:
         good_analyses=set(["RAW_VELOCITY","FILTERED_VELOCITY","FILTERED_PACE","LOG_POWER_SPECTRUM","SPECTROGRAM","HEART_RATE_CURVE","HR_PACE_SCATTER"])
         requests=set(analysis_string.split("|")).intersection(good_analyses)
         for request in requests:
-            print "PERFORMING ->", request
+            print("PERFORMING ->", request)
             
         if len(requests) < 1 or len(requests)>5:
-            print "ERROR: TOO MANY OR TOO FEW VALID ANALYSES"
-            print "Valid analyses:"
+            print("ERROR: TOO MANY OR TOO FEW VALID ANALYSES")
+            print("Valid analyses:")
             for valid in good_analyses:
-                print "\t", valid
+                print("\t", valid)
             return
 
 
@@ -175,15 +181,22 @@ class segment_analytics_object:
             if request == "HEART_RATE_CURVE":
                 plt.title("Heart Rate")
                 for xx in self.HR:
-                    print xx
+                    print(xx)
                 plt.plot([x[0] for x in self.HR], [x[1] for x in self.HR], 'bo')
             if request == "HR_PACE_SCATTER":
                 plt.title("HR_PACE_SCATTER")
                 HR_P = [(1.0/x.speed,x.heart_rate) for x in self.S if x.speed > 0.0]
                 plt.scatter([x[0] for x in HR_P],[x[1] for x in HR_P])
-        plt.show()
 
+        plt.figure(2)
+        self.seaborn_plots()
+        plt.show()
         
+    def seaborn_plots(self):
+        sns.set(style="whitegrid")
+        data = pd.DataFrame([(1000.0*x[0][1], x[1].speed )for x in zip(self.Xf,self.S)],[x[0] for x in self.Xf],columns=['Smooth Velocity','Device Speed'])
+        sns.lineplot(data=data, palette="tab10", linewidth=2.5)
+
 
 
     def euclidean(self,x,y):
