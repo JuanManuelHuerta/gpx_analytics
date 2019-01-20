@@ -13,6 +13,7 @@
     LOG_POWER_SPECTRUM
     SPECTROGRAM
     HEART_RATE_CURVE
+    HR_PACE
 
     To do:
     VO2_MAX_CURVE  (Cooper)
@@ -39,7 +40,7 @@ def do_Analysis():
     ##  
     if len(sys.argv) != 3:
         print "ERROR: argument(s) missing.\n USE:  v00.py  <FILE_NAME>  <ANALYSES>"
-        print "RAW_VELOCITY|FILTERED_VELOCITY|FILTERED_PACE|LOG_POWER_SPECTRUM|SPECTROGRAM|HEART_RATE_CURVE"
+        print "RAW_VELOCITY|FILTERED_VELOCITY|FILTERED_PACE|LOG_POWER_SPECTRUM|SPECTROGRAM|HEART_RATE_CURVE|HR_PACE|HR_PACE_SCATTER"
         return 
 
 

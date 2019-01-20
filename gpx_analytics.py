@@ -54,7 +54,7 @@ class segment_analytics_object:
                 md = datetime_object
                 origin =(float(p['@lat']),  float(p['@lon']))
             #X.append( [datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon'])])
-            self.S.append( multi_sensor_point(datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon']),None))
+            self.S.append( multi_sensor_point(datetime_object,  float(p['@lat']), float(p[a+"ele"]['$']),  float(p['@lon']),None,None))
             
        ##  Duplet of (time, coordinates) :  (time, lat, lon)                                                                                                                                        
        # X=[[(x[0]-md).total_seconds(),(x[1],x[3])] for x in X]
@@ -69,7 +69,7 @@ class segment_analytics_object:
             Data = namedtuple("Data", next(reader)) 
             for data in imap(Data._make, reader):
                 try:
-                    self.S.append(multi_sensor_point(float(data.time),float(data.lat),float(data.elevation),float(data.long),float(data.heartRate)))
+                    self.S.append(multi_sensor_point(float(data.time),float(data.lat),float(data.elevation),float(data.long),float(data.heartRate),float(data.speed)))
                 except:
                     print "ERROR reading point:", data, "IGNORING"
         X=[[x.time_offset,(x.latitude,x.longitude)] for x in self.S]
@@ -85,9 +85,10 @@ class segment_analytics_object:
     # FILTERED_PACE 
     # LOG_POWER_SPECTRUM 
     # SPECTROGRAM
-    # HEART_RATE_CURVE                                                                                                                                                                             
+    # HEART_RATE_CURVE                                                                                                                                                                      
+    # HR_PACE_SCATTER
 
-        good_analyses=set(["RAW_VELOCITY","FILTERED_VELOCITY","FILTERED_PACE","LOG_POWER_SPECTRUM","SPECTROGRAM","HEART_RATE_CURVE"])
+        good_analyses=set(["RAW_VELOCITY","FILTERED_VELOCITY","FILTERED_PACE","LOG_POWER_SPECTRUM","SPECTROGRAM","HEART_RATE_CURVE","HR_PACE_SCATTER"])
         requests=set(analysis_string.split("|")).intersection(good_analyses)
         for request in requests:
             print "PERFORMING ->", request
@@ -139,6 +140,11 @@ class segment_analytics_object:
         #  Log-Power Spectrum                                                                                                                                                                   
         self.ps = np.log(np.abs(np.fft.fft(self.just_X_pace))**2)
 
+
+    def grade_adjusted_pace(self):
+        # TODO: https://medium.com/strava-engineering/improving-grade-adjusted-pace-b9a2a332a5dc
+        return
+
     def make_plots(self,analyses):
         #Plotting steps.                                                                                                                                                                        
         # Points are NOT evenly spaced, but let's ignore that fact for now                                                                                                                      
@@ -171,7 +177,10 @@ class segment_analytics_object:
                 for xx in self.HR:
                     print xx
                 plt.plot([x[0] for x in self.HR], [x[1] for x in self.HR], 'bo')
-                
+            if request == "HR_PACE_SCATTER":
+                plt.title("HR_PACE_SCATTER")
+                HR_P = [(1.0/x.speed,x.heart_rate) for x in self.S if x.speed > 0.0]
+                plt.scatter([x[0] for x in HR_P],[x[1] for x in HR_P])
         plt.show()
 
         
