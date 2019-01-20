@@ -39,8 +39,8 @@ def do_Analysis():
 
     ##  
     if len(sys.argv) != 3:
-        print "ERROR: argument(s) missing.\n USE:  v00.py  <FILE_NAME>  <ANALYSES>"
-        print "RAW_VELOCITY|FILTERED_VELOCITY|FILTERED_PACE|LOG_POWER_SPECTRUM|SPECTROGRAM|HEART_RATE_CURVE|HR_PACE|HR_PACE_SCATTER"
+        print("ERROR: argument(s) missing.\n USE:  v00.py  <FILE_NAME>  <ANALYSES>")
+        print("RAW_VELOCITY|FILTERED_VELOCITY|FILTERED_PACE|LOG_POWER_SPECTRUM|SPECTROGRAM|HEART_RATE_CURVE|HR_PACE|HR_PACE_SCATTER")
         return 
 
 
@@ -51,7 +51,7 @@ def do_Analysis():
         file_name = sys.argv[1]
         my_segment.load_csv(file_name)
     else:
-        print "No valid file specified"
+        print("No valid file specified")
         return
 
     my_segment.analyses(sys.argv[2])
