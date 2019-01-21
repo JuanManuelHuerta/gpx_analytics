@@ -64,7 +64,7 @@ class segment_analytics_object:
             
        ##  Duplet of (time, coordinates) :  (time, lat, lon)                                                                                                                                        
        # X=[[(x[0]-md).total_seconds(),(x[1],x[3])] for x in X]
-        X=[[(x.datetime-md).total_seconds(),(x.latitude,x.longitude)] for x in self.S]
+        X=[[(x.datetime-md).total_seconds(),(x.latitude,x.longitude,x.elevation)] for x in self.S]
         self.X=sorted(X,key=operator.itemgetter(0))
 
 
@@ -96,7 +96,7 @@ class segment_analytics_object:
     # ELEVATION
 
         good_analyses=set(["RAW_VELOCITY","FILTERED_VELOCITY","FILTERED_PACE","LOG_POWER_SPECTRUM","SPECTROGRAM","HEART_RATE_CURVE","HR_PACE_SCATTER","ELEVATION"])
-        requests=set(analysis_string.split("|")).intersection(good_analyses)
+        requests=sorted(good_analyses.intersection(set(analysis_string.split("|"))))
         for request in requests:
             print("PERFORMING ->", request)
             
@@ -164,7 +164,7 @@ class segment_analytics_object:
             i+=1
             plt.subplot(n_panels,1,i)
             if request =="ELEVATION":
-                plt.title("Raw velocity points")
+                plt.title("Raw Elevation points")
                 plt.plot([x[0] for x in self.Xd], [x[1][2] for x in self.X], '-')
             elif request =="RAW_VELOCITY":
                 plt.title("Raw velocity points")
@@ -194,15 +194,16 @@ class segment_analytics_object:
                 HR_P = [(1.0/x.speed,x.heart_rate) for x in self.S if x.speed > 0.0]
                 plt.scatter([x[0] for x in HR_P],[x[1] for x in HR_P]),'.'
 
-        plt.figure(2)
         self.seaborn_plots()
         plt.show()
         
     def seaborn_plots(self):
-        sns.set(style="whitegrid")
-        data = pd.DataFrame([(1000.0*x[0][1], x[1].speed )for x in zip(self.Xf,self.S)],[x[0] for x in self.Xf],columns=['Smooth Velocity','Device Speed'])
-        sns.lineplot(data=data, palette="tab10", linewidth=2.5)
-
+        if  sum([1.0 for x in self.S if x.speed is not None])>20:
+            plt.figure(2)
+            sns.set(style="whitegrid")
+            data = pd.DataFrame([(1000.0*x[0][1], x[1].speed )for x in zip(self.Xf,self.S)],[x[0] for x in self.Xf],columns=['Calculated  Velocity (Filtered)','Device Speed'])
+            sns.lineplot(data=data, palette="tab10", linewidth=2.5)
+        
 
 
     def euclidean(self,x,y):
