@@ -5,23 +5,30 @@ License: MIT
 This code is intended to perform the analysis of Geospatial GPS signals for outdoor movement tracking.
 Formats supported: GPX, and CSV.
 
-# Analyses:
+# SIMPLE CALCULATIONS/PLOTS:
 
 - RAW_VELOCITY         :  Calculated from the Lat-Long measurements
-
-- FILTERED_VELOCITY    :  Same as raw velocity, but with an LPF smoothing
 
 - FILTERED_PACE        :  Calculated pace from the Filtered Velocity
 
 - ELEVATION            :  Elevation curve provided by measurements
 
+- HEART_RATE_CURVE     :  From Measurements
+
+- HR_PACE_SCATTER      : Scatter plot of heart rate and pace
+
+# ALGORITHMS/TRANSFORMATIONS:
+
+- FILTERED_VELOCITY    :  Same as raw velocity, but with an LPF smoothing
+
 - LOG_POWER_SPECTRUM   :  Full file LPS, reveals periodicity (and hence measurment issues)
 
 - SPECTROGRAM          :  Shows temporal view of spectral components of velocity: low changing, medium changing, high changing
 
-- HEART_RATE_CURVE     :  From Measurements
+- GAP                   : Experimental calculation of Grade Adjusted Pace
 
-- HR_PACE_SCATTER      : Scatter plot of heart rate and pace
+
+
 
 # To run:
 
