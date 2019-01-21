@@ -78,7 +78,7 @@ class segment_analytics_object:
                     self.S.append(multi_sensor_point(float(data.time),float(data.lat),float(data.elevation),float(data.long),float(data.heartRate),float(data.speed)))
                 except:
                     print("ERROR reading point:", data, "IGNORING")
-        X=[[x.time_offset,(x.latitude,x.longitude)] for x in self.S]
+        X=[[x.time_offset,(x.latitude,x.longitude,x.elevation)] for x in self.S]
         self.X=sorted(X,key=operator.itemgetter(0))
 
 
@@ -93,8 +93,9 @@ class segment_analytics_object:
     # SPECTROGRAM
     # HEART_RATE_CURVE                                                                                                                                                                      
     # HR_PACE_SCATTER
+    # ELEVATION
 
-        good_analyses=set(["RAW_VELOCITY","FILTERED_VELOCITY","FILTERED_PACE","LOG_POWER_SPECTRUM","SPECTROGRAM","HEART_RATE_CURVE","HR_PACE_SCATTER"])
+        good_analyses=set(["RAW_VELOCITY","FILTERED_VELOCITY","FILTERED_PACE","LOG_POWER_SPECTRUM","SPECTROGRAM","HEART_RATE_CURVE","HR_PACE_SCATTER","ELEVATION"])
         requests=set(analysis_string.split("|")).intersection(good_analyses)
         for request in requests:
             print("PERFORMING ->", request)
@@ -149,6 +150,8 @@ class segment_analytics_object:
 
     def grade_adjusted_pace(self):
         # TODO: https://medium.com/strava-engineering/improving-grade-adjusted-pace-b9a2a332a5dc
+        ## TODO:
+        ## Lets start with a poor mans version: A simple Velocity divided by grade
         return
 
     def make_plots(self,analyses):
@@ -160,33 +163,36 @@ class segment_analytics_object:
         for request in analyses:
             i+=1
             plt.subplot(n_panels,1,i)
-            if request =="RAW_VELOCITY":
+            if request =="ELEVATION":
                 plt.title("Raw velocity points")
-                plt.plot([x[0] for x in self.Xd], [x[1] for x in self.Xd], 'bo')
-            if request == "FILTERED_VELOCITY":
+                plt.plot([x[0] for x in self.Xd], [x[1][2] for x in self.X], '-')
+            elif request =="RAW_VELOCITY":
+                plt.title("Raw velocity points")
+                plt.plot([x[0] for x in self.Xd], [x[1] for x in self.Xd], '-')
+            elif request == "FILTERED_VELOCITY":
                 plt.title("Low-pass filtered velocity Curve")
                 plt.plot([x[0] for x in self.Xf], [x[1] for x in self.Xf])
-            if request == "FILTERED_PACE":
+            elif request == "FILTERED_PACE":
                 plt.title("Pace  Curve ")
                 pc =[1.0/x[1] for x in self.Xf]
                 plt.plot([x[0] for x in self.Xf],pc)
                 plt.ylim(max(pc),min(pc))
-            if request == "LOG_POWER_SPECTRUM":
+            elif request == "LOG_POWER_SPECTRUM":
                 plt.title("Log Power Spectrum of the Whole Velocity Run")
                 plt.plot(self.ps)
-            if request == "SPECTROGRAM":            
+            elif request == "SPECTROGRAM":            
                 NFFT = 64  # the length of the windowing segments
                 plt.title("Changing Log Power Spectrum (Spectrogram)")
+                x=[x[1] for x in self.Xf]
+                x_p=[1.0/x[1] for x in self.Xf]
                 Pxx, freqs, bins, im = plt.specgram(x_p, NFFT=NFFT, Fs=1.0, noverlap=0 )
-            if request == "HEART_RATE_CURVE":
+            elif request == "HEART_RATE_CURVE":
                 plt.title("Heart Rate")
-                for xx in self.HR:
-                    print(xx)
-                plt.plot([x[0] for x in self.HR], [x[1] for x in self.HR], 'bo')
-            if request == "HR_PACE_SCATTER":
+                plt.plot([x[0] for x in self.HR], [x[1] for x in self.HR], '-')
+            elif request == "HR_PACE_SCATTER":
                 plt.title("HR_PACE_SCATTER")
                 HR_P = [(1.0/x.speed,x.heart_rate) for x in self.S if x.speed > 0.0]
-                plt.scatter([x[0] for x in HR_P],[x[1] for x in HR_P])
+                plt.scatter([x[0] for x in HR_P],[x[1] for x in HR_P]),'.'
 
         plt.figure(2)
         self.seaborn_plots()
