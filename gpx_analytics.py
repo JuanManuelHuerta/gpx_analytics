@@ -37,16 +37,28 @@ class segment_analytics_object:
 
     
     def __init__(self):
+
+       ##  Global Parameters
+        
+        self.filter_order = 24
+
+
         ##  S : Sensor point array
         ##  X : offset lat-long points
         ##  Xd: Velocity Curve
         ##  Xf: Filtered velocity curve
         ##  HR: Heart Rate
+        ##  P : Pace (Filtered)
+        ## GAP : Grade Adjusted Pace
+
         self.S=[]
         self.X=None
         self.Xd=None
         self.Xf=None
         self.HR=None
+        self.P=None
+        self.G=None
+        self.GAP=None
 
     def load_gpx(self,file_location):
         my_data = eval(dumps(bf.data(fromstring(open(file_location,'rt').read()))))
@@ -94,8 +106,9 @@ class segment_analytics_object:
     # HEART_RATE_CURVE                                                                                                                                                                      
     # HR_PACE_SCATTER
     # ELEVATION
+    # GAP
 
-        good_analyses=set(["RAW_VELOCITY","FILTERED_VELOCITY","FILTERED_PACE","LOG_POWER_SPECTRUM","SPECTROGRAM","HEART_RATE_CURVE","HR_PACE_SCATTER","ELEVATION"])
+        good_analyses=set(["RAW_VELOCITY","FILTERED_VELOCITY","FILTERED_PACE","LOG_POWER_SPECTRUM","SPECTROGRAM","HEART_RATE_CURVE","HR_PACE_SCATTER","ELEVATION","GAP"])
         requests=sorted(good_analyses.intersection(set(analysis_string.split("|"))))
         for request in requests:
             print("PERFORMING ->", request)
@@ -109,9 +122,13 @@ class segment_analytics_object:
 
 
         self.compute_velocity()
-        self.filter_velocity_and_pace(24)
+        self.filter_velocity_and_pace()
         self.compute_power_spectrum()
         self.compute_heart_rate()
+        self.compute_pace()
+
+        if "GAP" in requests:
+            self.compute_gap()
 
         self.make_plots(requests)
    
@@ -129,8 +146,8 @@ class segment_analytics_object:
         self.HR=sorted(HR,key=operator.itemgetter(0))
 
                 
-    def filter_velocity_and_pace(self,m_a):
-           moving_average  = m_a
+    def filter_velocity_and_pace(self):
+           moving_average  = self.filter_order
            Xf=[]
            just_X=[]
            just_X_pace=[]
@@ -143,16 +160,47 @@ class segment_analytics_object:
            self.just_X_pace=just_X_pace
            self.Xf=Xf
 
+    def compute_pace(self):
+           moving_average  = self.filter_order
+           Xp=[]
+           for k in range(len(self.Xd)-moving_average):
+               x1 = sum([x[1] for x in self.Xd[k:k+moving_average]])/float(moving_average)
+               Xp.append((self.X[k][0],1.0/x1))
+           self.P=Xp
+
+    def compute_grade(self):
+        ## Todo: work in progress
+        Xg=[]
+        moving_average = self.filter_order
+        x1=0.0
+        for k in range(len(self.Xd)-moving_average):
+            for i in range(moving_average):
+                x1+=(1.0/float(moving_average))*(self.S[k].elevation-self.S[k+1].elevation)
+            Xg.append(x1)
+        self.G=Xg
+        return
+
+
+    def compute_gap(self):
+        # TODO: https://medium.com/strava-engineering/improving-grade-adjusted-pace-b9a2a332a5dc
+        ## TODO:
+        ## Lets start with a poor mans version: A simple Velocity divided by grade           moving_average  = m_a
+           Xp=[]
+           self.compute_grade()
+           moving_average = self.filter_order
+           for k in range(len(self.Xd)-moving_average):
+               x1 = sum([x[1] for x in self.Xd[k:k+moving_average]])/float(moving_average)
+               Xp.append((self.X[k][0],1.0/x1 + 10.0*self.G[k]))
+           self.GAP=Xp
+
+
+
+
     def compute_power_spectrum(self):
         #  Log-Power Spectrum                                                                                                                                                                   
         self.ps = np.log(np.abs(np.fft.fft(self.just_X_pace))**2)
 
 
-    def grade_adjusted_pace(self):
-        # TODO: https://medium.com/strava-engineering/improving-grade-adjusted-pace-b9a2a332a5dc
-        ## TODO:
-        ## Lets start with a poor mans version: A simple Velocity divided by grade
-        return
 
     def make_plots(self,analyses):
         #Plotting steps.                                                                                                                                                                        
@@ -177,6 +225,11 @@ class segment_analytics_object:
                 pc =[1.0/x[1] for x in self.Xf]
                 plt.plot([x[0] for x in self.Xf],pc)
                 plt.ylim(max(pc),min(pc))
+            elif request == "GAP":
+                plt.title("Grade Adjusted Pace (v0.0) ")
+                gc =[x[1] for x in self.GAP]
+                plt.plot([x[0] for x in self.GAP],gc)
+                plt.ylim(max(gc),min(gc))
             elif request == "LOG_POWER_SPECTRUM":
                 plt.title("Log Power Spectrum of the Whole Velocity Run")
                 plt.plot(self.ps)
