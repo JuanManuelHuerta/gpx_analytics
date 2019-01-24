@@ -5,7 +5,7 @@ License: MIT
 This code is intended to perform the analysis of Geospatial GPS signals for outdoor movement tracking.
 Formats supported: GPX, and CSV.
 
-# SIMPLE CALCULATIONS/PLOTS:
+# Simple plots:
 
 - RAW_VELOCITY         :  Calculated from the Lat-Long measurements
 
@@ -17,7 +17,7 @@ Formats supported: GPX, and CSV.
 
 - HR_PACE_SCATTER      : Scatter plot of heart rate and pace
 
-# ALGORITHMS/TRANSFORMATIONS:
+# Algorithms and transformations:
 
 - FILTERED_VELOCITY    :  Same as raw velocity, but with an LPF smoothing
 
@@ -26,9 +26,6 @@ Formats supported: GPX, and CSV.
 - SPECTROGRAM          :  Shows temporal view of spectral components of velocity: low changing, medium changing, high changing
 
 - GAP                   : Experimental calculation of Grade Adjusted Pace
-
-
-
 
 # To run:
 
@@ -45,6 +42,7 @@ Module and package dependencies: basic Python packages (math, operator, numpy, s
 
 Runs on Python 3.
 
+# Wiki
 
 See the Wiki in the repo for images:
 
