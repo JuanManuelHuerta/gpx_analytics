@@ -41,6 +41,8 @@ class segment_analytics_object:
        ##  Global Parameters
         
         self.filter_order = 24
+        self.gap_order = 12
+        self.gap_gain = 5.0
 
 
         ##  S : Sensor point array
@@ -171,7 +173,7 @@ class segment_analytics_object:
     def compute_grade(self):
         ## Todo: work in progress
         Xg=[]
-        moving_average = self.filter_order
+        moving_average = self.gap_order
         x1=0.0
         for k in range(len(self.Xd)-moving_average):
             for i in range(moving_average):
@@ -182,15 +184,17 @@ class segment_analytics_object:
 
 
     def compute_gap(self):
+
         # TODO: https://medium.com/strava-engineering/improving-grade-adjusted-pace-b9a2a332a5dc
         ## TODO:
         ## Lets start with a poor mans version: A simple Velocity divided by grade           moving_average  = m_a
+
            Xp=[]
            self.compute_grade()
            moving_average = self.filter_order
            for k in range(len(self.Xd)-moving_average):
                x1 = sum([x[1] for x in self.Xd[k:k+moving_average]])/float(moving_average)
-               Xp.append((self.X[k][0],1.0/x1 + 10.0*self.G[k]))
+               Xp.append((self.X[k][0],1.0/x1 + self.gap_gain * self.G[k]))
            self.GAP=Xp
 
 
