@@ -14,10 +14,10 @@
     SPECTROGRAM
     HEART_RATE_CURVE
     HR_PACE
+    GAP
 
     To do:
     VO2_MAX_CURVE  (Cooper)
-    GAP
     RUNNING_POWER
     FTP
 
@@ -31,16 +31,21 @@ __copyright__   = "Copyright 2019, Juan M. Huerta"
 
 import sys
 import gpx_analytics
+import gpx_analytics.segment_analytics
+import gpx_analytics.segment_analytics.segment_analytics_object
+#import  gpx_analytics.segment_analytics.segment_analytics_object from gpx_analytics.segment_analytics
+#from gpx_analytics.segment_analytics import  segment_analytics_object
+
 
 def do_Analysis():
 
     file_name=None
-    my_segment = gpx_analytics.segment_analytics_object()
+    my_segment = gpx_analytics.segment_analytics.segment_analytics_object.segment_analytics_object()
 
     ##  
     if len(sys.argv) != 3:
         print("ERROR: argument(s) missing.\n USE:  v00.py  <FILE_NAME>  <ANALYSES>")
-        print("RAW_VELOCITY|FILTERED_VELOCITY|FILTERED_PACE|LOG_POWER_SPECTRUM|SPECTROGRAM|HEART_RATE_CURVE|HR_PACE|HR_PACE_SCATTER")
+        print("RAW_VELOCITY|FILTERED_VELOCITY|FILTERED_PACE|LOG_POWER_SPECTRUM|SPECTROGRAM|HEART_RATE_CURVE|HR_PACE|HR_PACE_SCATTER|GAP")
         return 
 
 

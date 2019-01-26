@@ -1,7 +1,7 @@
 
 
 
-PYTHONPATH="./gpx_analytics:$PYTHONPATH"
+set PYTHONPATH="./packages:$PYTHONPATH"
 
 export PYTHONPATH
 
