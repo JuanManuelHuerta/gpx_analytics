@@ -37,11 +37,23 @@ To convert from fit to csv use fitdump.py
 
 
 
-# To run:
+# Wrapper scripts:
+
+Single file analysis, with analysis pipeline:
 
 python3 v00.py <gpx.file_to_be_proccessed>  "<PIPE_DELIMITED_ANALYSIS_STRING>"
 
 Please choose up to 5 options.
+
+
+Joining 2 files:
+
+
+python3 v01.py <file1> <file2>
+
+Output goes to stdout.
+
+
 
 Two windows will open: one with the calculated versus device measurement, and the other with the specified analysis.
 
