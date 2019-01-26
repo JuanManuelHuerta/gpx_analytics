@@ -39,7 +39,7 @@ To convert from fit to csv use fitdump.py
 
 # Wrapper scripts:
 
-Single file analysis, with analysis pipeline:
+## Single file analysis, with analysis pipeline:
 
 source config_me.sh
 
@@ -48,7 +48,7 @@ python3 src/v00.py <gpx.file_to_be_proccessed>  "<PIPE_DELIMITED_ANALYSIS_STRING
 Please choose up to 5 options.
 
 
-Joining 2 files:
+## Joining 2 files:
 
 source config_me.sh
 
