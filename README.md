@@ -29,9 +29,9 @@ Formats supported: GPX, and CSV.
 
 # Formats supported
 
-- GPX
+- GPX from Strava
 
-- CSV
+- CSV from Garmin (fit) and Tom Tom 
 
 To convert from fit to csv use fitdump.py
 
