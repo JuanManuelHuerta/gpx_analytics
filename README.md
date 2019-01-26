@@ -27,6 +27,16 @@ Formats supported: GPX, and CSV.
 
 - GAP                   : Experimental calculation of Grade Adjusted Pace
 
+# Formats supported
+
+- GPX
+
+- CSV
+
+To convert from fit to csv use fitdump.py
+
+
+
 # To run:
 
 python3 v00.py <gpx.file_to_be_proccessed>  "<PIPE_DELIMITED_ANALYSIS_STRING>"
@@ -35,7 +45,18 @@ Please choose up to 5 options.
 
 Two windows will open: one with the calculated versus device measurement, and the other with the specified analysis.
 
+
+#  Module
+
+To configure Pytonpath:
+
+source configure_me.sh
+
+
+
+
 # Example
+
 python3 v00.py my_file.csv  "RAW_VELOCITY|FILTERED_PACE|HR_PACE"
 
 Module and package dependencies: basic Python packages (math, operator, numpy, seaborn, pandas etc.) See all import statements.
