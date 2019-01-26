@@ -50,9 +50,11 @@ Please choose up to 5 options.
 
 ## Joining 2 files:
 
+''
 source config_me.sh
 
-python3 src/v01.py <file1> <file2>
+python3 src/v01.py < file_1 > < file_2 >
+''
 
 Output goes to stdout.
 
