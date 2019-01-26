@@ -90,14 +90,27 @@ class segment_analytics_object:
 
 
     def load_csv(self,file_location):
+        print("READING CSV")
         with open(file_location, mode="rt") as infile:
             reader = csv.reader(infile)
-            Data = namedtuple("Data", next(reader)) 
+            Data = namedtuple("Data", next(reader))
+            time_origin = None
             for data in imap(Data._make, reader):
                 try:
+                    # This is the Tom Tom CSV
                     self.S.append(multi_sensor_point(float(data.time),float(data.lat),float(data.elevation),float(data.long),float(data.heartRate),float(data.speed)))
                 except:
-                    print("ERROR reading point:", data, "IGNORING")
+                    if True: 
+                        # This is the Garmin CSV:
+                        datetime_object = datetime.strptime(data.timestamp, '%Y-%m-%d %H:%M:%S-06:00')
+                        if time_origin is None:
+                            time_origin = datetime_object
+                        this_offset=(datetime_object-time_origin).total_seconds()    
+                        #print(this_offset)
+                        self.S.append(multi_sensor_point(this_offset,float(data.position_lat),float(data.altitude),float(data.position_long),None,None))
+                        
+                    else:
+                        print("ERROR reading point:", data, "IGNORING")
         X=[[x.time_offset,(x.latitude,x.longitude,x.elevation)] for x in self.S]
         self.X=sorted(X,key=operator.itemgetter(0))
 
