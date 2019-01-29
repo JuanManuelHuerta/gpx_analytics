@@ -47,6 +47,8 @@ python3 src/v00.py <gpx.file_to_be_proccessed>  "<PIPE_DELIMITED_ANALYSIS_STRING
 
 Please choose up to 5 options.
 
+Two windows will open: one with the calculated versus device measurement, and the other with the specified analysis.
+
 
 ## Joining 2 files:
 
@@ -56,11 +58,9 @@ source config_me.sh
 python3 src/v01.py < file_1 > < file_2 >
 ''
 
-Output goes to stdout.
+Output (joined file) goes to stdout.
 
 
-
-Two windows will open: one with the calculated versus device measurement, and the other with the specified analysis.
 
 
 #  Module
