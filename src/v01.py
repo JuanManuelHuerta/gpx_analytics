@@ -59,7 +59,17 @@ def do_Analysis():
 
 
     
-    gpx_analytics.algorithms.distances.join(my_segment_1,my_segment_2)
+    new_list = gpx_analytics.algorithms.distances.join(my_segment_1,my_segment_2)
+    my_segment_3 = gpx_analytics.segment_analytics.segment_analytics_object.segment_analytics_object()
+    my_segment_3.load_from_list(new_list)
+
+
+    #for item in new_list:
+    #    print(item)
+
+    
+    my_segment_3.analyses("RAW_VELOCITY|FILTERED_VELOCITY|FILTERED_PACE")
+
 
 
 
