@@ -89,6 +89,11 @@ class segment_analytics_object:
 
 
 
+    def load_from_list(self,X):
+        self.X=X
+
+
+
     def load_csv(self,file_location):
         print("READING CSV")
         with open(file_location, mode="rt") as infile:
