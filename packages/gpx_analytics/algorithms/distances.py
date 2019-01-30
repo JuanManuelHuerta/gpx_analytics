@@ -25,7 +25,9 @@ def my_haversine(lon1, lat1, lon2, lat2):
     return c * r
 
 
-
+def super_basic_interpolation(p1,p2):
+    result = ((p1[0]+p2[0])/2.0,(p1[1]+p2[1])/2.0,None)
+    return result
 
 
 def distance_with_shift(s_1,s_2,shift_1):
@@ -39,7 +41,6 @@ def distance_with_shift(s_1,s_2,shift_1):
     for point in s_2.X:
         d_2[point[0]]=point[1]
 
-
     d=0.0
     n=0.0
     for point in d_1.items():
@@ -51,6 +52,7 @@ def distance_with_shift(s_1,s_2,shift_1):
     return shift_1, d
 
 def  join(my_segment_1,my_segment_2):
+
     min_d = None
     min_i = None
     for i in range(30):
@@ -63,6 +65,9 @@ def  join(my_segment_1,my_segment_2):
             min_d = this_d
             
     total_dict={}
+    just_left=0
+    just_right=0
+    both=0
     for point in my_segment_1.X:
         total_dict[point[0]]=[point[1],None]
     for point in my_segment_2.X:
@@ -72,7 +77,26 @@ def  join(my_segment_1,my_segment_2):
         total_dict[t][1]=point[1]
         
 
-    for point in sorted(total_dict.items(),key=operator.itemgetter(0)):
-        print(point)
+    #for point in sorted(total_dict.items(),key=operator.itemgetter(0)):
+    #    if point[1][0] is None:
+    #        just_right+=1
+    #    if point[1][1] is None:
+    #        just_left+=1
+    #    if point[1][0] is not None and point[1][1] is not None:
+    #        both+=1
+    #    print(point)
             
+    #print(just_left, just_right, both)
 
+
+    for key in total_dict:
+        if total_dict[key][0] is None:
+            total_dict[key]=(total_dict[key][1][0],total_dict[key][1][1],None)
+        elif total_dict[key][1]is None:
+            total_dict[key]=(total_dict[key][0][0],total_dict[key][0][1],None)
+        else:
+            total_dict[key]=super_basic_interpolation(total_dict[key][0],total_dict[key][1])
+
+
+
+    return [x for x in  sorted(total_dict.items(),key=operator.itemgetter(0))]
